@@ -186,22 +186,22 @@ def run_simulation(state: IntakeState) -> IntakeState:
 
     # Run each node
     state = intake_node(state)
-    print("  [✓] Intake node complete")
+    print("  [OK] Intake node complete")
 
     state = policy_retrieval_node(state)
-    print("  [✓] Policy retrieval complete")
+    print("  [OK] Policy retrieval complete")
 
     state = eligibility_node(state)
-    print("  [✓] Eligibility checking complete")
+    print("  [OK] Eligibility checking complete")
 
     state = risk_assessment_node(state)
-    print("  [✓] Risk assessment complete")
+    print("  [OK] Risk assessment complete")
 
     state = summary_node(state)
-    print("  [✓] Summary generation complete")
+    print("  [OK] Summary generation complete")
 
     state = human_review_node(state)
-    print("  [✓] Ready for human review")
+    print("  [OK] Ready for human review")
 
     print()
     print("=" * 60)
@@ -220,10 +220,10 @@ def run_simulation(state: IntakeState) -> IntakeState:
 def main():
     """Main entry point."""
     print()
-    print("╔══════════════════════════════════════════════════════════╗")
-    print("║     JUVENILE JUSTICE INTAKE TRIAGE ASSISTANT            ║")
-    print("║     POC #1 - LangGraph Multi-Agent System               ║")
-    print("╚══════════════════════════════════════════════════════════╝")
+    print("=" * 60)
+    print("  JUVENILE JUSTICE INTAKE TRIAGE ASSISTANT")
+    print("  POC #1 - LangGraph Multi-Agent System")
+    print("=" * 60)
     print()
 
     run_demo()

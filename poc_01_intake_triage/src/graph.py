@@ -38,16 +38,17 @@ def route_after_review(state: IntakeState) -> Literal["questioning", "summary", 
     """
     Route after human review based on officer decision.
 
-    - If approved: End workflow
     - If additional questioning requested: Loop back
     - If edits made: Regenerate summary
+    - Otherwise: End workflow (default for demo)
     """
-    if state.get("approved"):
-        return "end"
-    elif state.get("request_additional_questioning"):
+    if state.get("request_additional_questioning"):
         return "questioning"
-    else:
+    elif state.get("officer_edits"):
         return "summary"
+    else:
+        # Default: end the workflow (for demo purposes, auto-approve)
+        return "end"
 
 
 def create_intake_graph() -> StateGraph:
@@ -132,53 +133,53 @@ def get_graph_diagram() -> str:
         ASCII diagram of the workflow
     """
     return """
-    ┌─────────────────────────────────────────────────────────┐
-    │                 INTAKE TRIAGE WORKFLOW                   │
-    └─────────────────────────────────────────────────────────┘
+    +-----------------------------------------------------------+
+    |                 INTAKE TRIAGE WORKFLOW                    |
+    +-----------------------------------------------------------+
 
     START
-      │
-      ▼
-    ┌─────────────┐
-    │   INTAKE    │  Collect basic information
-    └─────────────┘
-      │
-      ▼
-    ┌─────────────┐
-    │ QUESTIONING │◄─────┐  Generate & track questions
-    └─────────────┘      │
-      │                  │
-      │ (topics remain)  │
-      ├──────────────────┘
-      │ (all covered)
-      ▼
-    ┌─────────────────┐
-    │ POLICY RETRIEVAL│  Query knowledge base
-    └─────────────────┘
-      │
-      ▼
-    ┌─────────────┐
-    │ ELIGIBILITY │  Check program criteria
-    └─────────────┘
-      │
-      ▼
-    ┌─────────────────┐
-    │ RISK ASSESSMENT │  Evaluate risk factors
-    └─────────────────┘
-      │
-      ▼
-    ┌─────────────┐
-    │   SUMMARY   │  Generate case summary
-    └─────────────┘
-      │
-      ▼
-    ┌──────────────┐
-    │ HUMAN REVIEW │◄───── INTERRUPT()
-    └──────────────┘
-      │
-      ├─── Approved ──────► END (Case Created)
-      │
-      ├─── More Info ────► QUESTIONING
-      │
-      └─── Edit ─────────► SUMMARY
+      |
+      v
+    +---------------+
+    |    INTAKE     |  Collect basic information
+    +---------------+
+      |
+      v
+    +---------------+
+    |  QUESTIONING  |<-----+  Generate & track questions
+    +---------------+      |
+      |                    |
+      | (topics remain)    |
+      +--------------------+
+      | (all covered)
+      v
+    +------------------+
+    | POLICY RETRIEVAL |  Query knowledge base
+    +------------------+
+      |
+      v
+    +---------------+
+    |  ELIGIBILITY  |  Check program criteria
+    +---------------+
+      |
+      v
+    +-----------------+
+    | RISK ASSESSMENT |  Evaluate risk factors
+    +-----------------+
+      |
+      v
+    +---------------+
+    |    SUMMARY    |  Generate case summary
+    +---------------+
+      |
+      v
+    +---------------+
+    | HUMAN REVIEW  |<----- INTERRUPT()
+    +---------------+
+      |
+      +--- Approved ------> END (Case Created)
+      |
+      +--- More Info ----> QUESTIONING
+      |
+      +--- Edit ---------> SUMMARY
     """
